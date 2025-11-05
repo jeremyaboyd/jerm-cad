@@ -1,6 +1,7 @@
 # JermCAD
 
 A browser-based 3D CAD model renderer that lets you design 3D models using YAML syntax. Define geometric shapes, apply boolean operations, and visualize your designs in real-time with export capabilities.
+![Screenshot of JermCAD](screenshot.png)
 
 ## Features
 
