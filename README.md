@@ -5,6 +5,14 @@ A browser-based 3D CAD model renderer that lets you design 3D models using YAML 
 
 **⚠️ Important Note:** This project is almost entirely vibe-coded and likely contains loads of bugs. Use at your own risk!
 
+## Why was JermCAD built?
+
+I found learning traditional CAD software incredibly frustrating. Despite having experience with Blender, those skills didn't translate well to modern CAD solutions like Fusion 360, SolidWorks, or FreeCAD. I knew exactly what primitive solids I needed to create my complex models (spheres, cylinders, cuboids), and how to combine them with boolean operations, but I couldn't figure out the UIs. 
+
+Every tool seemed to have its own way of doing things, and terminologies and tools that felt completely alien. So I decided to build something different: a code-based CAD solution where I could express my design intent directly in YAML, using simple geometric primitives and operations I already understood.
+
+JermCAD is the result: a tool vibe-coded by someone who needed CAD but didn't want to learn it.
+
 ## Features
 
 - **YAML-Based Modeling**: Define 3D models using simple YAML syntax
