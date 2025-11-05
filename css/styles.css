@@ -10,70 +10,141 @@ body {
     height: 100vh;
     background: #1e1e1e;
     color: #e0e0e0;
+    overflow: hidden;
 }
 
 #editor-panel {
     width: 40%;
+    min-width: 200px;
+    max-width: 80%;
     display: flex;
     flex-direction: column;
     background: #252526;
-    border-right: 1px solid #3e3e42;
+    overflow: hidden;
 }
 
-#toolbar {
-    padding: 10px;
+#splitter {
+    width: 4px;
+    background: #3e3e42;
+    cursor: col-resize;
+    user-select: none;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+#splitter:hover {
+    background: #007acc;
+}
+
+#splitter.dragging {
+    background: #007acc;
+}
+
+/* Toolbar Styles */
+.toolbar {
+    padding: 8px 12px;
     background: #2d2d30;
     border-bottom: 1px solid #3e3e42;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+    min-height: 42px;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 6px;
     align-items: center;
 }
 
-button {
-    padding: 8px 16px;
-    background: #007acc;
-    color: white;
-    border: none;
-    border-radius: 4px;
+.toolbar-group-right {
+    margin-left: auto;
+}
+
+.toolbar-btn {
+    padding: 6px 12px;
+    background: transparent;
+    color: #cccccc;
+    border: 1px solid transparent;
+    border-radius: 3px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    user-select: none;
 }
 
-button:hover {
-    background: #005a9e;
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-#export-format,
-#quality-select {
-    padding: 8px 12px;
+.toolbar-btn:hover {
     background: #3e3e42;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
+    color: #ffffff;
+    border-color: #555;
 }
 
-#export-format:hover,
-#quality-select:hover {
-    background: #46464a;
+.toolbar-btn:active {
+    background: #454545;
+    transform: translateY(0.5px);
 }
 
-#export-format:focus,
-#quality-select:focus {
-    outline: none;
+.toolbar-btn-primary {
+    background: #007acc;
+    color: #ffffff;
     border-color: #007acc;
+}
+
+.toolbar-btn-primary:hover {
+    background: #005a9e;
+    border-color: #005a9e;
+}
+
+.toolbar-btn .btn-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.toolbar-btn .btn-text {
+    font-size: 13px;
+}
+
+.toolbar-select {
+    padding: 6px 10px;
+    background: #3e3e42;
+    color: #cccccc;
+    border: 1px solid #555;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cccccc' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+}
+
+.toolbar-select:hover {
+    background-color: #46464a;
+    border-color: #666;
+    color: #ffffff;
+}
+
+.toolbar-select:focus {
+    border-color: #007acc;
+    color: #ffffff;
+}
+
+.toolbar-select option {
+    background: #2d2d30;
+    color: #cccccc;
 }
 
 #editor {
     flex: 1;
-    padding: 15px;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 14px;
     line-height: 1.5;
@@ -90,15 +161,33 @@ button:active {
     outline: none;
 }
 
+/* CodeMirror wrapper styling */
+.CodeMirror {
+    flex: 1;
+    height: 100%;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.CodeMirror-scroll {
+    min-height: 100%;
+}
+
 #viewer-panel {
     flex: 1;
+    min-width: 200px;
     position: relative;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 #canvas-container {
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 #error-display {
@@ -123,7 +212,7 @@ button:active {
 
 #info-panel {
     position: absolute;
-    top: 20px;
+    top: 60px;
     right: 20px;
     background: rgba(0, 0, 0, 0.7);
     color: white;
@@ -158,6 +247,13 @@ button:active {
     #editor-panel {
         width: 100%;
         height: 50%;
+        max-width: 100%;
+    }
+    
+    #splitter {
+        width: 100%;
+        height: 4px;
+        cursor: row-resize;
     }
 }
 

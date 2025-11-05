@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAML 3D Model Renderer</title>
+    <title>JermCAD | A YAML 3D Model Renderer</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/monokai.css">
 </head>
 <body>
     <div id="editor-panel">
-        <div id="toolbar">
-            <button id="btn-render">🔄 Render Model</button>
-            <select id="quality-select" title="Render Quality">
-                <option value="low" selected>Low (32)</option>
-                <option value="medium">Med (64)</option>
-                <option value="high">High (128)</option>
-                <option value="ultra">Ultra (256)</option>
-            </select>
-            <button id="btn-reset-camera">📷 Reset Camera</button>
-            <button id="btn-wireframe">🔲 Toggle Wireframe</button>
-            <button id="btn-export">💾 Export STL</button>
+        <div id="editor-toolbar" class="toolbar">
+            <div class="toolbar-group">
+                <button id="btn-new" class="toolbar-btn" title="New File (Ctrl+N)">
+                    <span class="btn-icon">📄</span>
+                    <span class="btn-text">New</span>
+                </button>
+                <button id="btn-open" class="toolbar-btn" title="Open File (Ctrl+O)">
+                    <span class="btn-icon">📂</span>
+                    <span class="btn-text">Open</span>
+                </button>
+                <button id="btn-save" class="toolbar-btn" title="Save File (Ctrl+S)">
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-text">Save</span>
+                </button>
+                <button id="btn-export" class="toolbar-btn" title="Export STL">
+                    <span class="btn-icon">📤</span>
+                    <span class="btn-text">Export</span>
+                </button>
+            </div>
         </div>
         <textarea id="editor" spellcheck="false"># Action Figure Body
 settings:
@@ -59,7 +69,7 @@ solids:
 stamps:
     balljoint:
         params: [$diameter, $length]
-        shapes:
+        solids:
             outer:
                 shape: sphere
                 center: [0, 0, 0]
@@ -102,7 +112,27 @@ final:
     # opacity: 1.0</textarea>
     </div>
     
+    <div id="splitter"></div>
+    
     <div id="viewer-panel">
+        <div id="viewer-toolbar" class="toolbar">
+            <div class="toolbar-group toolbar-group-right">
+                <select id="quality-select" class="toolbar-select" title="Render Quality">
+                    <option value="low" selected>Low (32)</option>
+                    <option value="medium">Med (64)</option>
+                    <option value="high">High (128)</option>
+                    <option value="ultra">Ultra (256)</option>
+                </select>
+                <button id="btn-render" class="toolbar-btn toolbar-btn-primary" title="Render Model (Ctrl+Enter)">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">Render</span>
+                </button>
+                <button id="btn-wireframe" class="toolbar-btn" title="Toggle Wireframe">
+                    <span class="btn-icon">🔲</span>
+                    <span class="btn-text">Wireframe</span>
+                </button>
+            </div>
+        </div>
         <div id="canvas-container"></div>
         <div id="error-display"></div>
         <div id="info-panel">
@@ -129,6 +159,8 @@ final:
     }
     </script>
     <script src="./node_modules/js-yaml/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/yaml/yaml.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

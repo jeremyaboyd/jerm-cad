@@ -1,4 +1,4 @@
-# Jerm-CAD
+# JermCAD
 
 A browser-based 3D CAD model renderer that lets you design 3D models using YAML syntax. Define geometric shapes, apply boolean operations, and visualize your designs in real-time with export capabilities.
 
@@ -376,8 +376,8 @@ Stamps are reusable parametric shape templates that allow you to define complex 
 
 Stamps are like "blueprints" for complex shapes or assemblies. Instead of defining the same combination of shapes multiple times, you define it once as a stamp and then instantiate it wherever needed. Stamps support:
 - **Parameters**: Define variables like `$diameter` and `$length` that can be set per instance
-- **Multiple Shapes**: A stamp can contain multiple shapes that work together
-- **Boolean Operations**: Stamps can include internal boolean operations between their shapes
+- **Multiple Solids**: A stamp can contain multiple solids that work together
+- **Boolean Operations**: Stamps can include internal boolean operations between their solids
 - **Parent Modifiers**: Apply boolean operations to the parent solid when the stamp is instantiated
 - **Positioning**: Each instance can be placed at different locations using `at`
 - **Rotation**: Each instance can be rotated independently using `rotate`
@@ -405,7 +405,7 @@ Stamps are defined in a `stamps` section at the root level of your YAML:
 stamps:
     my_stamp:
         params: [$param1, $param2]  # Optional: define parameters
-        shapes:
+        solids:
             shape1:
                 shape: sphere
                 center: [0, 0, 0]
@@ -424,7 +424,7 @@ stamps:
 
 **Stamp Structure:**
 - `params`: (Optional) Array of parameter names with `$` prefix (e.g., `[$diameter, $length]`)
-- `shapes`: Dictionary of shapes that make up the stamp (can reference parameters)
+- `solids`: Dictionary of solids that make up the stamp (can reference parameters)
 - `parent`: (Optional) Modifiers to apply to the parent solid when instantiated
 
 **Parameter Expressions:**
@@ -499,7 +499,7 @@ solids:
 stamps:
     balljoint:
         params: [$diameter, $length]
-        shapes:
+        solids:
             outer:
                 shape: sphere
                 center: [0, 0, 0]

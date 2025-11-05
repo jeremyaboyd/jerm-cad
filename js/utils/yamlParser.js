@@ -134,8 +134,8 @@ function processStamps(data) {
             const processedShapes = {}; // Store processed shapes temporarily
             
             // First pass: create all shapes with parameter substitution and position offset
-            if (stampDef.shapes) {
-                for (const [shapeName, shapeDef] of Object.entries(stampDef.shapes)) {
+            if (stampDef.solids) {
+                for (const [shapeName, shapeDef] of Object.entries(stampDef.solids)) {
                     const uniqueName = `${solidName}_${stampInstanceName}_${shapeName}`;
                     shapeNameMap[shapeName] = uniqueName;
                     

@@ -48,6 +48,6 @@ export function handleResize() {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
-    controls.handleResize(); // Update controls on resize
+    // OrbitControls automatically handles resize based on renderer size
 }
 

@@ -10,6 +10,7 @@ import { setModels, getModels, getWireframeMode } from './renderer/controls.js';
 import { showError, hideError, updateStats } from './ui/display.js';
 import { setDebugEnabled, debug, debugLabel } from './utils/debug.js';
 import { collectDependencies } from './utils/dependencyResolver.js';
+import { getEditorValue } from './ui/editor.js';
 
 /**
  * Render model from YAML text
@@ -18,7 +19,7 @@ export function renderModel() {
     hideError();
     
     try {
-        const yamlText = document.getElementById('editor').value;
+        const yamlText = getEditorValue();
         const data = parseYAML(yamlText);
         
         // Enable/disable debug based on settings

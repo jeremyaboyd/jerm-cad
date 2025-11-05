@@ -7,11 +7,15 @@ import { initialize as initializeScene, getCSGEvaluator } from './renderer/scene
 import { startAnimation, handleResize } from './renderer/animation.js';
 import { initialize as initializeModifiers } from './modifiers/index.js';
 import { initialize as initializeUI } from './ui/events.js';
+import { initializeEditor, getEditorValue } from './ui/editor.js';
 import { renderModel } from './modelRenderer.js';
 import { compileYAML } from './utils/yamlParser.js';
 
 // Initialize on load
 window.addEventListener('load', () => {
+    // Initialize CodeMirror editor
+    initializeEditor();
+    
     // Initialize Three.js scene
     const { csgEvaluator } = initializeScene();
     
@@ -27,6 +31,9 @@ window.addEventListener('load', () => {
     // Handle window resize
     window.addEventListener('resize', handleResize);
     
+    // Listen for render events (triggered by Ctrl+Enter in editor)
+    window.addEventListener('render', renderModel);
+    
     // Initial render
     renderModel();
 });
@@ -37,7 +44,7 @@ window.addEventListener('load', () => {
 window.compileYAML = function(yamlText) {
     if (yamlText === undefined) {
         // Get YAML from editor if no argument provided
-        yamlText = document.getElementById('editor')?.value || '';
+        yamlText = getEditorValue();
     }
     if (!yamlText) {
         console.error('No YAML text provided and editor is empty');
