@@ -49,7 +49,7 @@ Start the development server:
 npm start
 ```
 
-This will start a local server at `http://localhost:8080` and automatically open it in your browser.
+This will start a local server at `http://localhost:3001` and automatically open it in your browser.
 
 Alternatively, you can use:
 ```bash
