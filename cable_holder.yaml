@@ -1,43 +1,71 @@
+# Cable Holder
+
+settings:
+    units: mm
+    debug: false
+    tolerance: 1e-3
+    up: [0, 0, 1]  # Z-up (CAD convention). Use [0, 1, 0] for Y-up
+
+materials:
+    blue_plastic:
+        color: 0x4287f5
+        opacity: 1.0
+    red_metal:
+        color: 0xff0000
+        opacity: 0.9
+    transparent_glass:
+        color: 0xffffff
+        opacity: 0.5
+
 solids:
-    base_cutout:
+    base_cutout: # Used to inset the double-sided sticky tape
         shape: cuboid
         center: [0, 0, base - 1]
-        size: [9, 7, 1.5]
+        size: [base-1, base-1, base / 2]
         visible: false
 
-    cable_cutout:
+    cable_cutout: # Used to cut an inner-diameter hole for the cable
         shape: cylinder
-        #rotation: [90, 0, 0]
         center: [0, 0, cable_holder]
         diameter: 3
         length: 5.5
         visible: false
 
-    cable_holder_split:
+    cable_holder_split: # Used to split the cable holder so the cable can be inserted
         shape: cuboid
         center: [0, 0, cable_holder + 2]
         size: [1.5, 4, 5]
         visible: false
 
-    cable_holder_chamfer_cutout:
+    cable_holder_chamfer_cutout: # Used to cut a chamfer on the cable holder
         shape: sphere
         center: [cable_holder, cable_holder + 2.6, cable_holder]
         diameter: cable_holder
 
-    cable_holder_chamfer_cutout2:
+    cable_holder_chamfer_cutout2: # Used to cut a chamfer on the cable holder
         clone: cable_holder_chamfer_cutout
         center: [cable_holder, cable_holder - 2.6, cable_holder]
 
-    cable_holder:
+    cable_holder: # The main cable holder solid
         shape: cylinder
-        #rotation: [90, 0, 0]  # Degrees [x, y, z]
         center: [0, 0, base + 3]
         diameter: 5
         length: 3
         modifiers:
-            # Multiple operations of the same type
             boolean:
                 - difference: cable_cutout
                 - difference: cable_holder_split
                 - difference: cable_holder_chamfer_cutout
                 - difference: cable_holder_chamfer_cutout2
+    
+    base: # The base of the cable holder
+        shape: cuboid
+        center: [0, 0, 0]
+        size: [10, 8, 3]
+        modifiers:
+            boolean:
+                - union: cable_holder
+                - difference: base_cutout
+
+final:
+    material: blue_plastic

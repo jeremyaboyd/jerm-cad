@@ -3,6 +3,8 @@
 A browser-based 3D CAD model renderer that lets you design 3D models using YAML syntax. Define geometric shapes, apply boolean operations, and visualize your designs in real-time with export capabilities.
 ![Screenshot of JermCAD](screenshot.png)
 
+**⚠️ Important Note:** This project is almost entirely vibe-coded and likely contains loads of bugs. Use at your own risk!
+
 ## Features
 
 - **YAML-Based Modeling**: Define 3D models using simple YAML syntax
@@ -605,6 +607,48 @@ solids:
 ## Export
 
 Click the "💾 Export STL" button to download your model as an STL file, ready for 3D printing or use in other CAD software.
+
+## Known Issues
+
+- **Fillet Modifier**: Not yet implemented
+- **STL Export**: May create non-manifold edges. Most slicers can repair these automatically, but manual fixes may be needed for complex models.
+
+## Roadmap
+
+### Modifiers
+
+- **Fillet**: Round edges and corners of shapes
+- **Chamfer**: Bevel edges at specific angles
+- **Array**: Create multiple copies of solids in patterns (linear, circular, etc.)
+
+### Cloud Features
+
+- **User Accounts**: Save your models to your account for easy access across devices
+- **Global Models Library**: Community-driven library where users can submit and use shared models
+- **Model Import**: Reference models from your account or the global library
+
+**Example of future import syntax:**
+```yaml
+solids:
+    snake:
+        import: snake_straight.stl
+        stamps:
+            articulation_array:
+                import: stamps_articulations.yaml
+                stamp: balljoint
+                diameter: 10
+                length: 4
+                at: [0, -100, 0]
+                modifiers:
+                    - array: 
+                        - count: 10  # how many copies
+                        - gap: 30    # how many units between
+                        - direction: [0, 1, 0]
+```
+
+## Contributing
+
+Found a bug or have a feature request? Please submit an issue! Your feedback helps improve JermCAD for everyone.
 
 ## Troubleshooting
 
