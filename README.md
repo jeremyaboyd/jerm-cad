@@ -3,7 +3,7 @@
 A browser-based 3D CAD model renderer that lets you design 3D models using YAML syntax. Define geometric shapes, apply boolean operations, and visualize your designs in real-time with export capabilities.
 ![Screenshot of JermCAD](screenshot.png)
 
-**⚠️ Important Note:** This project is almost entirely vibe-coded and likely contains loads of bugs. Use at your own risk!
+**Important Note:** This project is almost entirely vibe-coded and likely contains loads of bugs. Use at your own risk!
 
 ## Why was JermCAD built?
 
@@ -62,9 +62,9 @@ This starts the server without automatically opening the browser.
 ### Basic Workflow
 
 1. **Edit the YAML** in the left panel editor
-2. **Click "🔄 Render Model"** or press `Ctrl+Enter` to render your changes
+2. **Click "Render Model"** or press `Ctrl+Enter` to render your changes
 3. **View your model** in the 3D viewer on the right
-4. **Export** as STL when ready using the "💾 Export STL" button
+4. **Export** as STL when ready using the "Export STL" button
 
 ### Camera Controls
 
@@ -614,7 +614,7 @@ solids:
 
 ## Export
 
-Click the "💾 Export STL" button to download your model as an STL file, ready for 3D printing or use in other CAD software.
+Click the "Export STL" button to download your model as an STL file, ready for 3D printing or use in other CAD software.
 
 ## Known Issues
 
@@ -662,7 +662,7 @@ Found a bug or have a feature request? Please submit an issue! Your feedback hel
 
 - **Model not rendering?** Check your YAML syntax for errors. The error panel will display specific issues.
 - **Boolean operations not working?** Ensure all referenced solids are defined in the `solids` section. Enable `debug: true` in settings to see detailed console output about dependency resolution and boolean operations.
-- **Camera stuck?** Use the "📷 Reset Camera" button to return to default view.
+- **Camera stuck?** Use the "Reset Camera" button to return to default view.
 - **Performance issues?** Try simplifying your model or reducing the number of boolean operations.
 - **Need more information?** Enable debug mode (`debug: true` in settings) and check the browser console (F12) for detailed logging about solid creation, dependencies, and processing steps.
 
