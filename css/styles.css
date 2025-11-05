@@ -1,0 +1,163 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    height: 100vh;
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+#editor-panel {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    background: #252526;
+    border-right: 1px solid #3e3e42;
+}
+
+#toolbar {
+    padding: 10px;
+    background: #2d2d30;
+    border-bottom: 1px solid #3e3e42;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+button {
+    padding: 8px 16px;
+    background: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #005a9e;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+#export-format,
+#quality-select {
+    padding: 8px 12px;
+    background: #3e3e42;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+#export-format:hover,
+#quality-select:hover {
+    background: #46464a;
+}
+
+#export-format:focus,
+#quality-select:focus {
+    outline: none;
+    border-color: #007acc;
+}
+
+#editor {
+    flex: 1;
+    padding: 15px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border: none;
+    resize: none;
+    overflow-y: auto;
+    white-space: pre;
+    tab-size: 4;
+}
+
+#editor:focus {
+    outline: none;
+}
+
+#viewer-panel {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#canvas-container {
+    width: 100%;
+    height: 100%;
+}
+
+#error-display {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 59, 48, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#error-display.show {
+    display: block;
+}
+
+#info-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    backdrop-filter: blur(10px);
+    min-width: 200px;
+}
+
+#info-panel h3 {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #007acc;
+}
+
+#info-panel div {
+    margin: 5px 0;
+}
+
+.controls-info {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    #editor-panel {
+        width: 100%;
+        height: 50%;
+    }
+}
+

@@ -1,0 +1,24 @@
+{
+  "name": "jerm-cad",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -p 8080 -o -c-1",
+    "serve": "http-server -p 8080 -c-1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "three": "^0.181.0",
+    "three-bvh-csg": "^0.0.17",
+    "three-mesh-bvh": "^0.9.2"
+  }
+}

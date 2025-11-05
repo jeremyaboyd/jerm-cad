@@ -1,0 +1,43 @@
+solids:
+    base_cutout:
+        shape: cuboid
+        center: [0, 0, base - 1]
+        size: [9, 7, 1.5]
+        visible: false
+
+    cable_cutout:
+        shape: cylinder
+        #rotation: [90, 0, 0]
+        center: [0, 0, cable_holder]
+        diameter: 3
+        length: 5.5
+        visible: false
+
+    cable_holder_split:
+        shape: cuboid
+        center: [0, 0, cable_holder + 2]
+        size: [1.5, 4, 5]
+        visible: false
+
+    cable_holder_chamfer_cutout:
+        shape: sphere
+        center: [cable_holder, cable_holder + 2.6, cable_holder]
+        diameter: cable_holder
+
+    cable_holder_chamfer_cutout2:
+        clone: cable_holder_chamfer_cutout
+        center: [cable_holder, cable_holder - 2.6, cable_holder]
+
+    cable_holder:
+        shape: cylinder
+        #rotation: [90, 0, 0]  # Degrees [x, y, z]
+        center: [0, 0, base + 3]
+        diameter: 5
+        length: 3
+        modifiers:
+            # Multiple operations of the same type
+            boolean:
+                - difference: cable_cutout
+                - difference: cable_holder_split
+                - difference: cable_holder_chamfer_cutout
+                - difference: cable_holder_chamfer_cutout2
