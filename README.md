@@ -7,6 +7,7 @@ A browser-based 3D CAD model renderer that lets you design 3D models using YAML 
 - **YAML-Based Modeling**: Define 3D models using simple YAML syntax
 - **Multiple Shape Types**: Cuboid, cylinder, sphere, and extrusion shapes
 - **Boolean Operations**: Union, difference, and intersection operations
+- **Stamps**: Reusable parametric shape templates for complex assemblies
 - **Property References**: Reference properties from other solids to maintain alignment and consistency
 - **3D Visualization**: Interactive 3D viewer with camera controls
 - **STL Export**: Export your models for 3D printing
@@ -367,6 +368,188 @@ top:
 
 **Note:** References must point to existing solids. Circular references are detected and prevented to avoid infinite loops.
 
+### Stamps
+
+Stamps are reusable parametric shape templates that allow you to define complex assemblies once and instantiate them multiple times with different parameters, positions, and rotations. This reduces code duplication and makes models easier to maintain and modify.
+
+#### What are Stamps?
+
+Stamps are like "blueprints" for complex shapes or assemblies. Instead of defining the same combination of shapes multiple times, you define it once as a stamp and then instantiate it wherever needed. Stamps support:
+- **Parameters**: Define variables like `$diameter` and `$length` that can be set per instance
+- **Multiple Shapes**: A stamp can contain multiple shapes that work together
+- **Boolean Operations**: Stamps can include internal boolean operations between their shapes
+- **Parent Modifiers**: Apply boolean operations to the parent solid when the stamp is instantiated
+- **Positioning**: Each instance can be placed at different locations using `at`
+- **Rotation**: Each instance can be rotated independently using `rotate`
+
+#### Why Use Stamps?
+
+- **DRY Principle**: Define once, use many times - reduces code duplication
+- **Consistency**: Ensure all instances of a shape are identical
+- **Easy Updates**: Change the stamp definition once, all instances update
+- **Parametric Design**: Create families of similar shapes with different sizes
+- **Complex Assemblies**: Build reusable components like joints, connectors, or mechanical parts
+
+#### How Stamps Work
+
+Stamps follow a three-step process:
+1. **Define** the stamp template with parameters and shapes
+2. **Instantiate** the stamp on a solid with specific parameter values
+3. **Expand** - the system automatically converts stamp instances into actual solids
+
+#### Defining Stamps
+
+Stamps are defined in a `stamps` section at the root level of your YAML:
+
+```yaml
+stamps:
+    my_stamp:
+        params: [$param1, $param2]  # Optional: define parameters
+        shapes:
+            shape1:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $param1
+            shape2:
+                shape: cylinder
+                center: [0, $param1 / 2, 0]
+                diameter: $param2
+                length: $param1
+        parent:
+            modifiers:
+                boolean:
+                    - union: shape1
+                    - union: shape2
+```
+
+**Stamp Structure:**
+- `params`: (Optional) Array of parameter names with `$` prefix (e.g., `[$diameter, $length]`)
+- `shapes`: Dictionary of shapes that make up the stamp (can reference parameters)
+- `parent`: (Optional) Modifiers to apply to the parent solid when instantiated
+
+**Parameter Expressions:**
+Parameters can be used in mathematical expressions:
+- `$diameter` - Simple parameter reference
+- `$diameter * 0.75` - Multiplication
+- `$diameter * 0.333 + $length / 2` - Complex expressions with multiple operations
+- Expressions support `+`, `-`, `*`, `/`, and parentheses
+
+**Shape Centers in Stamps:**
+- Shapes within stamps are defined relative to `[0, 0, 0]` (the stamp origin)
+- When instantiated, all shapes are translated to the `at` position
+- If rotation is specified, shapes rotate around the stamp origin before translation
+
+#### Instantiating Stamps
+
+Use the `stamps` property on any solid to instantiate stamp templates:
+
+```yaml
+solids:
+    my_part:
+        shape: cuboid
+        size: [10, 10, 10]
+        stamps:
+            instance1:
+                stamp: my_stamp
+                param1: 5
+                param2: 3
+                at: [0, 0, 5]
+            instance2:
+                stamp: my_stamp
+                param1: 8
+                param2: 4
+                at: [10, 0, 5]
+                rotate: [0, 0, 90]
+```
+
+**Stamp Instance Properties:**
+- `stamp`: Name of the stamp to instantiate (required)
+- `at`: Position `[x, y, z]` where the stamp should be placed (default: `[0, 0, 0]`)
+- `rotate`: Rotation `[x, y, z]` in degrees around each axis (default: `[0, 0, 0]`)
+- Any other properties: Parameter values (e.g., `diameter: 10`, `length: 5`)
+
+**Parameter Passing:**
+- Parameters can be passed by name: `diameter: 10` matches `$diameter`
+- Parameters can be passed by position: If `params: [$diameter, $length]`, first property becomes `$diameter`, second becomes `$length`
+- All properties except `stamp`, `at`, and `rotate` are treated as parameters
+
+#### Complete Stamp Example
+
+Here's a complete example showing a parametric ball joint stamp:
+
+```yaml
+solids:
+    chest:
+        shape: cuboid
+        center: [0, 0, 0]
+        size: [10, 20, 35]
+        stamps:
+            shoulder_joint_left:
+                stamp: balljoint
+                diameter: 10
+                length: 5
+                at: [0, 6, 13]
+            shoulder_joint_right:
+                stamp: balljoint
+                diameter: 10
+                length: 5
+                at: [0, -6, 13]
+                rotate: [0, 0, 180]  # Rotate 180° around Z axis
+
+stamps:
+    balljoint:
+        params: [$diameter, $length]
+        shapes:
+            outer:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter
+                modifiers:
+                    boolean:
+                        - difference: inner_cutout
+                        - difference: inner_cutout2
+            inner_cutout:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter * 0.75
+            inner_cutout2:
+                shape: sphere
+                center: [0, $diameter * 0.5, 0]
+                diameter: $diameter * 0.75
+            inner:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter * 0.667
+                modifiers:
+                    boolean:
+                        - union: inner_arm
+            inner_arm:
+                shape: cylinder
+                center: [0, $diameter * 0.333 + $length / 2, 0]
+                diameter: $diameter * 0.2
+                length: $length
+        parent:
+            modifiers:
+                boolean:
+                    - union: outer
+                    - difference: inner_cutout
+                    - difference: inner_cutout2
+```
+
+**What Happens:**
+1. The `balljoint` stamp defines a parametric joint with 5 shapes
+2. `shoulder_joint_left` instantiates it at `[0, 6, 13]` with `diameter=10`, `length=5`
+3. `shoulder_joint_right` instantiates the same stamp at `[0, -6, 13]` with 180° rotation
+4. The system expands each instance into actual solids with unique names like `chest_shoulder_joint_left_outer`, `chest_shoulder_joint_right_outer`, etc.
+5. Parent modifiers are applied to the `chest` solid, performing boolean operations with the stamp shapes
+
+**Important Notes:**
+- Stamp shapes are expanded into the `solids` section with unique names based on the parent solid and instance name
+- All shapes in a stamp rotate together around the stamp's origin before translation
+- Boolean operations within stamps are resolved before parent modifiers
+- Stamps can reference other stamps (nested stamps)
+- Parameter values can be numbers or mathematical expressions
+
 ### Complete Example
 
 ```yaml
@@ -435,8 +618,14 @@ Click the "💾 Export STL" button to download your model as an STL file, ready 
 - **Three.js**: 3D graphics library
 - **three-bvh-csg**: Constructive Solid Geometry operations
 - **js-yaml**: YAML parsing
+- **Cursor**: Vibe-coding IDE
 
 ## License
 
-ISC
+ISC License
 
+Copyright 2025 Jeremy A Boyd
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.

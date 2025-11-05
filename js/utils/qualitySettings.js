@@ -9,7 +9,7 @@ const QUALITY_PRESETS = {
     'ultra': 256
 };
 
-let currentQuality = 'high'; // Default quality
+let currentQuality = 'low'; // Default quality
 let forceQuality = null; // Override for specific operations (e.g., STL export)
 
 /**
