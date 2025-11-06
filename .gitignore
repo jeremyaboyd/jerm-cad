@@ -79,3 +79,6 @@ temp/
 # Yarn Integrity file
 .yarn-integrity
 
+# Release notes
+RELEASE_NOTES.md
+
