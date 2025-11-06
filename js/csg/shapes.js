@@ -24,13 +24,15 @@ export function createCylinder(solid) {
     const segments = getSegmentCount();
     debug(`Creating cylinder with diameter ${diameter}, length ${length}, segments ${segments}`);
     // In Three.js, cylinders are created along Y axis by default
-    // For Z-up systems, we'll handle orientation via rotation
+    // Rotate -90 degrees around X axis to orient along Z axis (bases perpendicular to Z)
     const geometry = new THREE.CylinderGeometry(
         diameter / 2,
         diameter / 2,
         length,
         segments
     );
+    // Rotate geometry so bases are perpendicular to Z-axis
+    geometry.rotateX(-Math.PI / 2);
     debugLabel('Cylinder created', { vertices: geometry.attributes.position?.count || 0 });
     return geometry;
 }
@@ -103,6 +105,50 @@ export function createExtrusion(solid) {
     return geometry;
 }
 
+export function createCone(solid) {
+    const diameter = solid.diameter || 1;
+    const height = solid.height || 1;
+    const segments = getSegmentCount();
+    debug(`Creating cone with diameter ${diameter}, height ${height}, segments ${segments}`);
+    
+    // Three.js ConeGeometry takes: radiusBottom, radiusTop, height, radialSegments
+    // For a cone, radiusTop is 0
+    // In Three.js, cones are created along Y axis by default
+    const geometry = new THREE.ConeGeometry(
+        diameter / 2,  // radiusBottom (half of diameter)
+        0,             // radiusTop (0 for a cone, >0 for a truncated cone)
+        height,        // height
+        segments        // radialSegments (from quality settings)
+    );
+    
+    // Rotate geometry so base is perpendicular to Z-axis
+    geometry.rotateX(-Math.PI / 2);
+    
+    debugLabel('Cone created', { vertices: geometry.attributes.position?.count || 0 });
+    return geometry;
+}
+
+export function createToroid(solid) {
+    const majorRadius = solid.major_radius || solid.radius || 1;
+    const minorRadius = solid.minor_radius || solid.tube_radius || 0.3;
+    const segments = getSegmentCount();
+    const tubularSegments = Math.floor(segments / 2) || 16;
+    debug(`Creating toroid with major radius ${majorRadius}, minor radius ${minorRadius}, segments ${segments}, tubular segments ${tubularSegments}`);
+    
+    // Three.js TorusGeometry takes: radius, tube, radialSegments, tubularSegments
+    // radius = major radius (distance from center to center of tube)
+    // tube = minor radius (radius of the tube itself)
+    const geometry = new THREE.TorusGeometry(
+        majorRadius,      // radius (major radius)
+        minorRadius,      // tube (minor radius)
+        segments,         // radialSegments (around the tube)
+        tubularSegments   // tubularSegments (around the torus)
+    );
+    
+    debugLabel('Toroid created', { vertices: geometry.attributes.position?.count || 0 });
+    return geometry;
+}
+
 /**
  * Create geometry based on solid shape type
  */
@@ -119,6 +165,10 @@ export function createGeometry(solid) {
             return createSphere(solid);
         case 'extrusion':
             return createExtrusion(solid);
+        case 'cone':
+            return createCone(solid);
+        case 'toroid':
+            return createToroid(solid);
         default:
             debug(`Unknown shape type "${shapeType}", using default box`);
             return new THREE.BoxGeometry(1, 1, 1);

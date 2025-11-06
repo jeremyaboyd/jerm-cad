@@ -20,6 +20,9 @@ export function renderModel() {
     
     try {
         const yamlText = getEditorValue();
+        
+        // Save to localStorage when rendering
+        localStorage.setItem('jermcad-editor-content', yamlText);
         const data = parseYAML(yamlText);
         
         // Enable/disable debug based on settings

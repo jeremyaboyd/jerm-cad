@@ -640,6 +640,63 @@ function resolveClones(solids) {
 }
 
 /**
+ * Extract and normalize root-level params from YAML data
+ * Converts array format like [{ $od: 10 }, { $id: 1 }] to { od: 10, id: 1 }
+ */
+function extractRootParams(data) {
+    if (!data.params || !Array.isArray(data.params)) {
+        return {};
+    }
+    
+    const paramMap = {};
+    for (const paramEntry of data.params) {
+        if (paramEntry && typeof paramEntry === 'object') {
+            // Each entry is an object with a single key-value pair like { $od: 10 }
+            for (const [key, value] of Object.entries(paramEntry)) {
+                // Remove $ prefix if present
+                const cleanKey = key.replace(/^\$/, '');
+                paramMap[cleanKey] = value;
+            }
+        }
+    }
+    
+    return paramMap;
+}
+
+/**
+ * Apply root-level params to all solids and stamps
+ */
+function applyRootParams(data, paramMap) {
+    if (Object.keys(paramMap).length === 0) {
+        return data;
+    }
+    
+    const result = { ...data };
+    
+    // Apply params to all solids
+    if (data.solids) {
+        const processedSolids = {};
+        for (const [name, solid] of Object.entries(data.solids)) {
+            // Apply parameter substitution to the entire solid
+            processedSolids[name] = substituteParameters(solid, paramMap);
+        }
+        result.solids = processedSolids;
+    }
+    
+    // Apply params to all stamp definitions
+    if (data.stamps) {
+        const processedStamps = {};
+        for (const [name, stamp] of Object.entries(data.stamps)) {
+            // Apply parameter substitution to the entire stamp definition
+            processedStamps[name] = substituteParameters(stamp, paramMap);
+        }
+        result.stamps = processedStamps;
+    }
+    
+    return result;
+}
+
+/**
  * Resolve all property references in solids
  * Uses multiple passes to handle transitive references (A references B, B references C)
  */
@@ -703,8 +760,13 @@ function resolveAllReferences(data) {
 export function parseYAML(yamlText) {
     try {
         const data = jsyaml.load(yamlText);
+        
+        // Extract root-level params and apply them to all solids
+        const rootParams = extractRootParams(data);
+        const dataWithParams = applyRootParams(data, rootParams);
+        
         // First, process stamps (expand stamp definitions into solids)
-        const dataWithStamps = processStamps(data);
+        const dataWithStamps = processStamps(dataWithParams);
         // Then resolve property references
         return resolveAllReferences(dataWithStamps);
     } catch (e) {

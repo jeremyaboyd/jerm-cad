@@ -21,7 +21,7 @@ export function resetCamera() {
     const camera = getCamera();
     const controls = getControls();
     
-    camera.position.set(30, 30, 30);
+    camera.position.set(50, 50, 50);
     controls.target.set(0, 0, 0);
     controls.update();
 }
@@ -85,9 +85,59 @@ export async function exportSTL() {
         if (transformedGeometries.length === 1) {
             finalGeometry = transformedGeometries[0];
         } else {
-            // Use Three.js BufferGeometryUtils for proper merging
-            const { BufferGeometryUtils } = await import('three/addons/utils/BufferGeometryUtils.js');
-            finalGeometry = BufferGeometryUtils.mergeGeometries(transformedGeometries, false);
+            // Manually merge geometries (consistent with modelRenderer.js approach)
+            const positions = [];
+            const normals = [];
+            const indices = [];
+            let indexOffset = 0;
+            
+            for (const geometry of transformedGeometries) {
+                // Ensure geometry has normals
+                if (!geometry.attributes.normal) {
+                    geometry.computeVertexNormals();
+                }
+                
+                const pos = geometry.attributes.position;
+                const norm = geometry.attributes.normal;
+                const idx = geometry.index;
+                
+                // Add positions
+                for (let i = 0; i < pos.count; i++) {
+                    positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+                }
+                
+                // Add normals
+                if (norm) {
+                    for (let i = 0; i < norm.count; i++) {
+                        normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
+                    }
+                }
+                
+                // Add indices with offset
+                if (idx) {
+                    for (let i = 0; i < idx.count; i++) {
+                        indices.push(idx.getX(i) + indexOffset);
+                    }
+                } else {
+                    // Non-indexed geometry - create indices
+                    for (let i = 0; i < pos.count; i += 3) {
+                        indices.push(indexOffset + i, indexOffset + i + 1, indexOffset + i + 2);
+                    }
+                }
+                
+                indexOffset += pos.count;
+            }
+            
+            finalGeometry = new THREE.BufferGeometry();
+            finalGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            if (normals.length > 0) {
+                finalGeometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+            } else {
+                finalGeometry.computeVertexNormals();
+            }
+            if (indices.length > 0) {
+                finalGeometry.setIndex(indices);
+            }
         }
         
         // Convert to non-indexed geometry if needed (STL requires triangles)

@@ -1,7 +1,7 @@
 {
   "name": "jerm-cad",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "A simple CAD tool for creating 3D models",
   "main": "index.js",
   "scripts": {
     "start": "http-server -p 8080 -o -c-1",
@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jeremy A Boyd",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {

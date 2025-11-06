@@ -1,0 +1,80 @@
+# Action Figure Body
+settings:
+    units: mm
+    debug: false
+    tolerance: 1e-3
+    up: [0, 0, 1]  # Z-up (CAD convention). Use [0, 1, 0] for Y-up
+
+materials:
+    blue_plastic:
+        color: 0x4287f5
+        opacity: 1.0
+    red_metal:
+        color: 0xff0000
+        opacity: 0.9
+    transparent_glass:
+        color: 0xffffff
+        opacity: 0.5
+
+solids:
+    chest:
+        shape: cuboid
+        center: [0, 0, 0]
+        size: [10, 20, 35]
+        stamps:
+            shoulder_joint_left:
+                stamp: balljoint
+                diameter: 10
+                length: 5
+                at: [0, 6, 13]
+            shoulder_joint_right:
+                stamp: balljoint
+                diameter: 10
+                length: 5
+                at: [0, -6, 13]
+                rotate: [0, 0, 180]
+
+stamps:
+    balljoint:
+        params: [$diameter, $length]
+        solids:
+            outer:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter
+                modifiers:
+                    boolean:
+                        - difference: inner_cutout
+                        - difference: inner_cutout2
+            inner_cutout:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter * 0.75
+            inner_cutout2:
+                shape: sphere
+                center: [0, $diameter * 0.5, 0]
+                diameter: $diameter * 0.75
+            inner:
+                shape: sphere
+                center: [0, 0, 0]
+                diameter: $diameter * 0.667
+                modifiers:
+                    boolean:
+                        - union: inner_arm
+            inner_arm:
+                shape: cylinder
+                center: [0, $diameter *0.333 + $length / 2, 0]
+                diameter: $diameter * 0.2
+                length: $length
+        parent:
+            modifiers:
+                boolean:
+                    - union: outer
+                    - difference: inner_cutout
+                    - difference: inner_cutout2
+
+final:
+    material: blue_plastic  # Apply material to the final merged mesh
+    # OR use direct properties:
+    # color: 0x4287f5
+    # opacity: 1.0

@@ -16,6 +16,43 @@ export function getControls() { return controls; }
 export function getCSGEvaluator() { return csgEvaluator; }
 
 /**
+ * Create a bold axes helper with thicker lines
+ * @param {number} size - Size of the axes
+ * @returns {THREE.Group} Group containing the axis lines
+ */
+function createBoldAxesHelper(size) {
+    const group = new THREE.Group();
+    const lineWidth = 0.03; // Thickness of the axis lines
+    const halfSize = size / 2;
+    
+    // X axis (red) - using cylinder geometry for thickness
+    const xAxisGeometry = new THREE.CylinderGeometry(lineWidth, lineWidth, size, 8);
+    const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+    xAxis.rotation.z = -Math.PI / 2; // Rotate to align with X axis
+    xAxis.position.x = halfSize; // Position so it extends from origin to +X
+    group.add(xAxis);
+    
+    // Y axis (green) - using cylinder geometry for thickness
+    const yAxisGeometry = new THREE.CylinderGeometry(lineWidth, lineWidth, size, 8);
+    const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
+    // Already aligned with Y axis (cylinders default to Y-up)
+    yAxis.position.y = halfSize; // Position so it extends from origin to +Y
+    group.add(yAxis);
+    
+    // Z axis (blue) - using cylinder geometry for thickness
+    const zAxisGeometry = new THREE.CylinderGeometry(lineWidth, lineWidth, size, 8);
+    const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+    zAxis.rotation.x = Math.PI / 2; // Rotate to align with Z axis
+    zAxis.position.z = halfSize; // Position so it extends from origin to +Z
+    group.add(zAxis);
+    
+    return group;
+}
+
+/**
  * Initialize Three.js scene, camera, renderer, and lights
  */
 export function initialize() {
@@ -33,7 +70,7 @@ export function initialize() {
     
     // Set default up vector to Z-up
     camera.up.set(0, 0, 1);
-    camera.position.set(30, 30, 30);
+    camera.position.set(50, 50, 50);
     camera.lookAt(0, 0, 0);
     
     // Renderer
@@ -70,8 +107,8 @@ export function initialize() {
     gridHelper.rotateX(Math.PI / 2); // Rotate to XY plane for Z-up default
     scene.add(gridHelper);
     
-    // Axes helper
-    axesHelper = new THREE.AxesHelper(10);
+    // Axes helper (custom thicker lines)
+    axesHelper = createBoldAxesHelper(10);
     scene.add(axesHelper);
     
     // Controls

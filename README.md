@@ -16,7 +16,7 @@ JermCAD is the result: a tool vibe-coded by someone who needed CAD but didn't wa
 ## Features
 
 - **YAML-Based Modeling**: Define 3D models using simple YAML syntax
-- **Multiple Shape Types**: Cuboid, cylinder, sphere, and extrusion shapes
+- **Multiple Shape Types**: Cuboid, cylinder, cone, sphere, toroid, and extrusion shapes
 - **Boolean Operations**: Union, difference, and intersection operations
 - **Stamps**: Reusable parametric shape templates for complex assemblies
 - **Property References**: Reference properties from other solids to maintain alignment and consistency
@@ -85,6 +85,12 @@ settings:
     up: [0, 0, 1]  # Z-up (CAD convention) or [0, 1, 0] for Y-up
     debug: false   # Enable verbose console logging (default: false)
 
+params:
+    - $od: 10      # Outer diameter parameter
+    - $id: 1       # Inner diameter parameter
+    - $l: 20       # Length parameter
+    - $cp: [5,5,5] # Center point parameter
+
 materials:
     my_material:
         color: 0xff0000  # Hex color code
@@ -103,6 +109,53 @@ final:
     # color: 0x4287f5
     # opacity: 1.0
 ```
+
+### Root-Level Parameters
+
+Root-level parameters allow you to define reusable variables that can be referenced throughout your model. This makes it easy to maintain consistent dimensions and update values in one place.
+
+**Syntax:**
+```yaml
+params:
+    - $od: 10      # Parameter with $ prefix
+    - $id: 1
+    - $l: 20
+    - $cp: [5,5,5] # Arrays are also supported
+```
+
+**Usage in Solids:**
+Parameters can be referenced in any property within any solid or stamp:
+
+```yaml
+params:
+    - $od: 10
+    - $l: 20
+    - $cp: [5,5,5]
+
+solids:
+    my_cylinder:
+        shape: cylinder
+        diameter: $od    # Uses $od = 10
+        length: $l       # Uses $l = 20
+        center: $cp      # Uses $cp = [5,5,5]
+    
+    another_shape:
+        shape: cuboid
+        size: [$od, $od, $l]  # Can be used in arrays too
+        center: $cp
+```
+
+**How it works:**
+- Parameters defined in the `params` section are available globally
+- Use `$paramName` syntax to reference parameters (the `$` prefix is removed when defining)
+- Parameters are substituted before any other processing (stamps, references, etc.)
+- Arrays and nested values are fully supported
+
+**Benefits:**
+- **Centralized Values**: Change a dimension once, update everywhere
+- **Parametric Models**: Create families of designs with different parameter values
+- **Consistency**: Ensure related shapes use the same dimensions
+- **Easy Iteration**: Adjust parameters quickly without hunting through code
 
 ### Materials
 
@@ -190,6 +243,8 @@ my_cylinder:
     rotation: [90, 0, 0]  # Optional rotation in degrees [x, y, z]
 ```
 
+**Orientation:** Cylinders are created with their bases perpendicular to the Z-axis by default (cylindrical axis along Z). This matches CAD conventions where Z is typically the vertical axis.
+
 #### Sphere
 ```yaml
 my_sphere:
@@ -197,6 +252,18 @@ my_sphere:
     center: [0, 0, 0]
     diameter: 5
 ```
+
+#### Cone
+```yaml
+my_cone:
+    shape: cone
+    center: [0, 0, 0]
+    diameter: 5        # Base diameter
+    height: 10         # Height of the cone
+    rotation: [90, 0, 0]  # Optional rotation in degrees [x, y, z]
+```
+
+**Orientation:** Cones are created with their base perpendicular to the Z-axis by default (cone axis along Z). This matches CAD conventions where Z is typically the vertical axis.
 
 #### Extrusion
 ```yaml

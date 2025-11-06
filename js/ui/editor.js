@@ -20,8 +20,9 @@ export function initializeEditor() {
         return;
     }
 
-    // Store the initial content
-    const initialContent = textarea.value;
+    // Load from localStorage or use textarea content
+    const savedContent = localStorage.getItem('jermcad-editor-content');
+    const initialContent = savedContent || textarea.value;
 
     // Tab stop size
     const TAB_SIZE = 4;

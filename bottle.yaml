@@ -1,0 +1,88 @@
+# Bottle/Canister
+settings:
+    units: mm
+    debug: false
+    tolerance: 1e-4
+    up: [0, 0, 1]  # Z-up (CAD convention). Use [0, 1, 0] for Y-up
+
+params:
+    - $id: 30
+    - $od: 35
+    - $h: 40
+
+materials:
+    default_material:
+        color: 0x4287f5
+        opacity: 1.0
+
+solids:
+    body_outer:
+        shape: cylinder
+        center: [0, -$od*.75, 0]
+        anchor: [0.5,0.5,0]
+        diameter: $od
+        length: $h - $od + $id
+        modifiers:
+            boolean:
+                - difference: body_inner
+                - difference: body_lid_cutout
+                - union: body_lid_lock_ball
+                - union: body_lid_lock_ball2
+                - difference: body_inner_final
+        
+    body_inner:
+        shape: cylinder
+        anchor: body_outer
+        center: [0, body_outer, ($od - $id)/2]
+        diameter: $id-.5
+        length: $h - (($od - $id)/4)
+    
+    body_inner_final:
+        clone: body_inner
+        diameter: $id
+        
+    lid_outer:
+        shape: cylinder
+        center: [0, $od*.75, 0]
+        anchor: [0.5,0.5,0]
+        diameter: $od
+        length: ($od - $id)*2
+        modifiers:
+            boolean:
+                - difference: lid_lid_lock_ball
+                - difference: lid_lid_lock_ball2
+                - difference: lid_inner
+    lid_inner:
+        shape: cylinder
+        center: [0, lid_outer, ($od - $id)*2]
+        diameter: ($od + $id)/2
+        length: ($od - $id)*2
+        
+    body_lid_cutout_inner:
+        clone: lid_inner
+        center: [0, body_outer, $h - ($od - $id)*2]
+        
+    body_lid_cutout:
+        clone: lid_outer
+        center: [0, body_outer, $h - ($od - $id)*2]
+        diameter: $od+1
+        modifiers:
+            boolean:
+                - difference: body_lid_cutout_inner
+                
+    body_lid_lock_ball:
+        shape: sphere
+        center: [0, ($od * -0.75) + $od/2 - ($od-$id)/1.75, $h - ($od - $id)*1.5]
+        diameter: ($od - $id) * 0.75
+    body_lid_lock_ball2:
+        shape: sphere
+        center: [0, ($od * -0.75) - $od/2 + ($od-$id)/1.75, $h - ($od - $id)*1.5]
+        diameter: ($od - $id) * 0.75
+    lid_lid_lock_ball:
+        shape: sphere
+        center: [0, ($od * 0.75) + $od/2 - ($od-$id)/1.75, ($od - $id)*1.5]
+        diameter: ($od - $id) * 0.75
+    lid_lid_lock_ball2:
+        shape: sphere
+        center: [0, ($od * 0.75) - $od/2 + ($od-$id)/1.75, ($od - $id)*1.5]
+        diameter: ($od - $id) * 0.75
